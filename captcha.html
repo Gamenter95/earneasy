@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Captcha | Earn Pokiri</title>
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .captcha-section {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .captcha-section h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .submit-btn {
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+
+    .submit-btn:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="captcha-section">
+    <h2>Complete the Captcha to Earn 1 Credit</h2>
+    <div class="h-captcha" data-sitekey="8cdeb86c-b5dc-4316-bc0a-49520f46b334"></div>
+    <button class="submit-btn" onclick="submitCaptcha()">Submit</button>
+  </div>
+
+  <script>
+    function submitCaptcha() {
+      const captchaResponse = hcaptcha.getResponse();
+      if (captchaResponse.length === 0) {
+        alert('Please complete the captcha!');
+        return;
+      }
+
+      // Validate the captcha (optional, may be done on the server-side)
+      hcaptcha.verify(captchaResponse)
+        .then(() => {
+          // Retrieve username and credits
+          const username = localStorage.getItem('username');
+          let credits = parseInt(localStorage.getItem(username + '_credits')) || 0;
+
+          // Add 1 credit
+          credits += 1;
+          localStorage.setItem(username + '_credits', credits);
+          alert('You earned 1 credit!');
+
+          // Redirect back to main page
+          window.location.href = 'index.html';
+        })
+        .catch(() => {
+          alert('Captcha verification failed. Please try again.');
+        });
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Earn Pokiri</title>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script> <!-- hCaptcha script -->
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .header {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .login-section {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-form {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .login-form h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .form-input label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-input input {
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input input:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        .submit-btn {
+            padding: 12px 30px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            text-align: left;
+            margin-top: 5px;
+        }
+
+        /* Main Section Styles */
+        .main-section {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .main-section h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .credits {
+            font-size: 1.2rem;
+            margin: 20px 0;
+        }
+
+        .shortlink-btn,
+        .captcha-btn {
+            padding: 12px;
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .shortlink-btn:hover,
+        .captcha-btn:hover {
+            background-color: #138496;
+        }
+
+        .message {
+            color: red;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        /* Fade-in Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header" id="header">Earn Pokiri</div>
+    <button class="login-btn" id="loginBtn" onclick="openLoginSection()">Login</button>
+
+    <!-- Login Section -->
+    <div class="login-section" id="loginSection">
+        <div class="login-form">
+            <h2>Login</h2>
+            <div class="form-input">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter username" />
+                <div id="usernameError" class="error-message"></div>
+            </div>
+            <div class="form-input">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" />
+                <div id="passwordError" class="error-message"></div>
+            </div>
+
+            <!-- hCaptcha -->
+            <div class="h-captcha" data-sitekey="8cdeb86c-b5dc-4316-bc0a-49520f46b334"></div>
+            <div id="captchaError" class="error-message"></div>
+
+            <button class="submit-btn" onclick="validateAndLogin()">Login</button>
+        </div>
+    </div>
+
+    <!-- Main Section -->
+    <div class="main-section" id="mainSection">
+        <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
+        <div class="credits">
+            Credits: <span id="credits">0</span> 🪙
+        </div>
+        <p>Earn 3 credits by completing:</p>
+        <button class="shortlink-btn" id="shortlinkBtn" onclick="goToShortlink()">Shortlink</button>
+        <div id="message" class="message"></div>
+
+        <p>Earn 1 credit for captcha</p>
+        <button class="captcha-btn" id="captchaBtn" onclick="redirectcaptcha()">Do captcha</button>
+    </div>
+
+    <script>
+        const existingUsers = {}; // Object to store usernames
+        let shortlinkTimer, captchaTimer;
+
+        // Check if the user is already logged in
+        window.onload = () => {
+            const loggedIn = localStorage.getItem('loggedIn');
+            if (loggedIn === 'true') {
+                const username = localStorage.getItem('username');
+                showMainSection(username);
+            }
+        };
+
+        // Open the login section
+        function openLoginSection() {
+            document.getElementById('loginSection').style.display = 'flex';
+        }
+
+        // Validate the login form and redirect if valid
+        function validateAndLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            let isValid = true;
+
+            // Validate username (must be 4 characters long and unique)
+            if (username.length < 4) {
+                document.getElementById('usernameError').textContent = 'Username must be at least 4 characters long';
+                isValid = false;
+            } else if (existingUsers[username]) {
+                document.getElementById('usernameError').textContent = 'Username is already used';
+                isValid = false;
+            } else {
+                document.getElementById('usernameError').textContent = '';
+            }
+
+            // Validate password (at least 6 characters long, letters and numbers)
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+            if (!passwordRegex.test(password)) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters long and include letters and numbers';
+                isValid = false;
+            } else {
+                document.getElementById('passwordError').textContent = '';
+            }
+
+            // Validate captcha
+            const captchaResponse = hcaptcha.getResponse();
+            if (!captchaResponse) {
+                document.getElementById('captchaError').textContent = 'Please complete the captcha';
+                isValid = false;
+            } else {
+                document.getElementById('captchaError').textContent = '';
+            }
+
+            // If valid, log in and show main section
+            if (isValid) {
+                existingUsers[username] = true; // Store username
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('username', username);
+                showMainSection(username);
+                hcaptcha.reset(); // Reset the captcha after successful login
+            }
+        }
+
+        // Show the main section
+        function showMainSection(username) {
+            document.getElementById('header').textContent = `Welcome, ${username}`;
+            document.getElementById('usernameDisplay').textContent = username;
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainSection').style.display = 'block';
+            document.getElementById('credits').textContent = localStorage.getItem('credits') || '0';
+        }
+
+        // Redirect to shortlink and handle timing
+        function goToShortlink() {
+            const credits = parseInt(localStorage.getItem('credits')) || 0;
+            const timestamp = localStorage.getItem('shortlinkTimestamp');
+
+            // Check if shortlink was completed within the last 35 seconds
+            if (timestamp && (Date.now() - timestamp < 35000)) {
+                document.getElementById('message').textContent = "You didn't complete the shortlink, do it again";
+                return;
+            }
+
+            // Redirect to shortlink page
+            window.open('https://cuty.io/UyWq2XJtilB6', '_blank');
+            shortlinkTimer = setTimeout(() => {
+                // Add credits after returning from the shortlink
+                localStorage.setItem('credits', credits + 1);
+                document.getElementById('credits').textContent = credits + 1;
+                localStorage.setItem('shortlinkTimestamp', Date.now());
+                document.getElementById('message').textContent = 'Credits added!';
+            }, 10000); // 10 seconds delay for credit addition
+        }
+
+// Redirect to captcha page
+    function redirectcaptcha() {
+        window.location.href = 'captcha.html'; // Redirect to captcha.html
+    }
+    </script>
+</body>
+
+</html>
